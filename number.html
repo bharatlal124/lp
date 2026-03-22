@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Process Stages Animation</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #1a1a24;
+      --box-purple: #5b42f3;
+      --text-inactive: #3a3a4a;
+      --text-active: #ffffff;
+      --text-paragraph: #a0a0b0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+    }
+
+    /* Padding to allow scrolling space for the demo */
+    .website-creation-stages {
+      padding: 100px 0;
+    }
+
+    /* --- Left Sticky Indicator Styles --- */
+    .indicator-wrapper {
+      position: relative;
+      width: 160px;
+    }
+
+    /* The static purple square */
+    .bg-square {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 160px;
+      height: 160px;
+      background-color: var(--box-purple);
+      border-radius: 16px;
+      z-index: 1;
+    }
+
+    /* The track that will slide up via GSAP */
+    .numbers-track {
+      position: relative;
+      z-index: 2;
+    }
+
+    .num-item {
+      width: 160px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 6rem;
+      font-weight: 800;
+      color: var(--text-inactive);
+      margin-bottom: 30px; /* Space between numbers when stacked below */
+      transition: color 0.4s ease;
+      line-height: 1;
+    }
+
+    .num-item.active {
+      color: var(--text-active);
+    }
+
+    /* --- Right Content Styles --- */
+    .content-section {
+      min-height: 80vh; /* Ensures enough scroll space for trigger */
+      margin-bottom: 50px;
+    }
+
+    .content-section h2 {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .content-section p {
+      color: var(--text-paragraph);
+      font-size: 1.15rem;
+      line-height: 1.6;
+      max-width: 90%;
+    }
+
+    .badge-free {
+      background-color: #ffd600;
+      color: #000;
+      font-size: 0.9rem;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="website-creation-stages">
+    <div class="container">
+      <div class="row position-relative">
+        
+        <div class="col-lg-3 d-none d-lg-block">
+          <div class="sticky-top" style="top: 120px;">
+            <div class="indicator-wrapper">
+              <div class="bg-square"></div>
+              
+              <div class="numbers-track">
+                <div class="num-item active">1</div>
+                <div class="num-item">2</div>
+                <div class="num-item">3</div>
+                <div class="num-item">4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-9 ps-lg-5">
+          
+          <article class="content-section" id="stage-0">
+            <h2 class="mb-4">STRATEGIC SESSIONS <span class="badge-free">Free</span></h2>
+            <p class="mb-5">We get to know you, discuss your goals, preferences, and ideas. We gather information about your event. Next, we prepare a presentation with the concept of your future website: showcasing references and features that can be implemented on the site. We develop the site structure in the form of a flowchart.</p>
+            <img src="https://placehold.co/900x550/e0e0e0/1a1a24?text=Flowchart+Layout" class="img-fluid rounded-4 shadow-lg w-100" alt="Stage 1">
+          </article>
+
+          <article class="content-section" id="stage-1">
+            <h2 class="mb-4">UX/UI AND VISUAL DESIGN</h2>
+            <p class="mb-5">We work on the conceptual content of future design solutions, considering user interaction logic. We select colors, font pairs, and create graphic elements to enhance the previously established meanings with relevant visuals. We create adaptive design layouts.</p>
+            <img src="https://placehold.co/900x550/e0e0e0/1a1a24?text=UI+Design+Mockup" class="img-fluid rounded-4 shadow-lg w-100" alt="Stage 2">
+          </article>
+
+          <article class="content-section" id="stage-2">
+            <h2 class="mb-4">DEVELOPMENT</h2>
+            <p class="mb-5">We bring design layouts to life with code, create interactive animations where needed, and adapt the site for different screen types. We make necessary integrations: CRM, chatbot, or anything else you need. We ensure everything works like clockwork: adaptation, loading speed. We connect the site to your domain and publish it.</p>
+            <img src="https://placehold.co/900x550/e0e0e0/1a1a24?text=Code+and+Development" class="img-fluid rounded-4 shadow-lg w-100" alt="Stage 3">
+          </article>
+
+          <article class="content-section" id="stage-3">
+            <h2 class="mb-4">GUARANTEE SUPPORT</h2>
+            <p class="mb-5">After the release, we provide one month of warranty support to ensure everything runs smoothly. We can also make content updates or additional changes on an hourly basis, such as updating event programs, adding new speakers, or other modifications as needed.</p>
+            <img src="https://placehold.co/900x550/e0e0e0/1a1a24?text=Support+Dashboard" class="img-fluid rounded-4 shadow-lg w-100" alt="Stage 4">
+          </article>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <script>
+    // Register ScrollTrigger plugin
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Select required elements
+    const sections = document.querySelectorAll('.content-section');
+    const numbersTrack = document.querySelector('.numbers-track');
+    const numItems = document.querySelectorAll('.num-item');
+
+    // Calculate step distance based on CSS height (160px) + margin-bottom (30px)
+    const itemHeight = 160;
+    const gap = 30;
+    const stepDistance = itemHeight + gap; 
+
+    // Loop through each section to create a ScrollTrigger
+    sections.forEach((section, index) => {
+      ScrollTrigger.create({
+        trigger: section,
+        // The trigger activates when the top of the section hits 40% down the viewport
+        start: "top 40%", 
+        end: "bottom 40%",
+        onToggle: self => {
+          if (self.isActive) {
+            
+            // 1. Slide the number container up
+            gsap.to(numbersTrack, {
+              y: -(index * stepDistance),
+              duration: 0.5,
+              ease: "power2.out"
+            });
+
+            // 2. Change text color of active vs inactive numbers
+            numItems.forEach((num, i) => {
+              if (i === index) {
+                num.classList.add('active');
+              } else {
+                num.classList.remove('active');
+              }
+            });
+
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

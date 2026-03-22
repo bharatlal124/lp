@@ -1,0 +1,1819 @@
+
+<script>
+  // Register plugins once for the whole page
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Global ScrollTrigger rules
+  ScrollTrigger.config({
+    ignoreMobileResize: true,
+    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize"
+  });
+
+  // ONE global resize listener to rule them all
+  let globalResizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(globalResizeTimer);
+    globalResizeTimer = setTimeout(() => {
+      ScrollTrigger.refresh(); // Tells all animations on the page to recalculate their math
+    }, 250);
+  });
+</script>
+
+
+
+
+
+ 
+<!-- ####################################################
+ #########################################
+ [sCROLL FAST ON PAGE SCRIPT]
+ ###################################### -->
+<!-- Scroll trigger animation smooth -->
+ <script>
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+
+if (document.body.classList.contains("fast-scroll-page")) {
+
+  ScrollSmoother.create({
+    smooth: 3.2,   // lower = faster scroll feel
+    effects: true
+  });
+
+}
+</script>
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [TESTIMONIAL SECTION SCRIPT]
+ ###################################### -->
+<!-- Testimonial section script  -->
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+//   gsap.registerPlugin(ScrollTrigger);
+	gsap.registerPlugin(ScrollTrigger);
+  if (window.innerWidth <= 767) {
+  ScrollTrigger.normalizeScroll(true);
+}
+
+  // Initialize GSAP matchMedia
+  let mm = gsap.matchMedia();
+
+  // Define your breakpoints
+  mm.add({
+    desktop: "(min-width: 769px)",
+    mobile: "(max-width: 768px)"
+  }, (context) => {
+    
+    // Check if we are currently on the mobile breakpoint
+    let { mobile } = context.conditions;
+    
+    const cards = gsap.utils.toArray(".testimonial-card");
+
+    cards.forEach((card, index) => {  
+      // We only want to animate the cards that are being covered
+      if (index !== cards.length - 1) {
+        gsap.to(card, {
+          // You might not want it to shrink as aggressively on mobile to keep text readable
+          scale: mobile ? 0.85 : 0.7,      
+          opacity: 0,  
+          ease: "none",  
+          scrollTrigger: {
+            trigger: card,
+            // Adjust the sticky trigger point: 150px is often too far down on phones
+            start: mobile ? "top 80px" : "top 150px", 
+            endTrigger: ".stack-container",
+            end: "bottom bottom",
+            scrub: true,
+			  invalidateOnRefresh: true,
+            // markers: true, // Uncomment to debug
+          }
+        });
+      }
+    });
+    
+    // matchMedia automatically cleans up when breakpoints change!
+  });
+	});
+</script>
+ 
+ 
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [STATS BAR ANIMATION SCRIPT]
+ ###################################### -->
+<!-- Bars animation script -->
+
+<script>
+  // Wait for the DOM to be fully loaded
+  document.addEventListener("DOMContentLoaded", (event) => {
+    
+    gsap.registerPlugin(ScrollTrigger);
+	  if (window.innerWidth <= 767) {
+  ScrollTrigger.normalizeScroll(true);
+}
+    let mm = gsap.matchMedia();
+
+    mm.add({
+      isDesktop: "(min-width: 768px)",
+      isMobile: "(max-width: 767px)"
+    }, (context) => {
+      
+      let { isMobile } = context.conditions;
+
+      var tl2 = gsap.timeline({
+          scrollTrigger: {
+              trigger: "#stats-section",
+// 			  scroller: ".my-mobile-scroll-wrapper",
+              start: "top 70%",
+              end: "bottom 80%",
+              scrub: 1, 
+			  invalidateOnRefresh: true,
+              // markers: true, // Uncomment this to see if triggers are actually loading!
+          }
+      });
+
+      let height1 = isMobile ? "210px" : "350px";
+      let height2 = isMobile ? "280px" : "470px";
+      let height3 = isMobile ? "360px" : "600px";
+
+      tl2.to(".bar-1", { height: height1, ease: "none" }, 0)
+         .to(".bar-2", { height: height2, ease: "none" }, 0)
+         .to(".bar-3", { height: height3, ease: "none" }, 0);
+
+      return () => { 
+        tl2.kill(); 
+      };
+    });
+    
+  });
+</script>
+<!--  -->
+
+
+
+
+ <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+<!-- ==============Footer swiper script end================== -->
+
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [PERSONAL TABING SECTION SCRIPT ]
+ ###################################### -->
+<!-- =============personal-tabing-section script======================= -->
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  function getAutoHeight(element) {
+      gsap.set(element, { height: "auto" });
+      const height = element.offsetHeight;
+      gsap.set(element, { height: 0 }); 
+      return height;
+  }
+
+  let masterTl; 
+  let dropTl; 
+
+  function initGSAP() {
+      // Clean up ONLY this section's timelines on resize
+      if (masterTl) {
+          if (masterTl.scrollTrigger) masterTl.scrollTrigger.kill();
+          masterTl.kill();
+      }
+      if (dropTl) {
+          if (dropTl.scrollTrigger) dropTl.scrollTrigger.kill();
+          dropTl.kill();
+      }
+      
+      gsap.set(".ball, .acc-item, .acc-content, .acc-header > span, .visual-item, li, .dotted-slot, .three-ball-hide", { clearProps: "all" });
+      
+      // CRITICAL FIX: Ensure balls can visually break out of their containers and sit on top of the bottom section
+      gsap.set(".acc-item, .acc-header", { overflow: "visible" });
+      gsap.set(".ball", { zIndex: 9999, position: "relative" });
+
+      if (window.innerWidth <= 767) return;
+
+     // Scope everything to the desktop container to ignore hidden mobile elements
+const desktopContainer = document.querySelector(".tabing-scroll-track");
+
+const accItems = desktopContainer.querySelectorAll(".acc-item");
+const visuals = desktopContainer.querySelectorAll(".visual-item");
+const balls = desktopContainer.querySelectorAll(".ball");
+// hideBalls live in the upper section, so we scope them to their specific container
+const hideBalls = document.querySelectorAll(".starting-balls-container .three-ball-hide");
+      
+//       const caseBoxes = [
+//           document.querySelector(".case_study_box1"),
+//           document.querySelector(".case_study_box2"),
+//           document.querySelector(".case_study_box3")
+//       ];
+
+      if (!accItems.length || !balls.length) return; 
+
+      const headerHeight = document.querySelector(".acc-header").offsetHeight;
+      const accItemStyle = window.getComputedStyle(accItems[0]);
+      const marginBottom = parseFloat(accItemStyle.marginBottom) || 0;
+      const slideUpDistance = headerHeight + marginBottom;
+
+      balls.forEach((ball, index) => {
+          const ballRect = ball.getBoundingClientRect();
+          let diffStartX = 0;
+          let diffStartY = 0;
+
+          if (hideBalls[index]) {
+              const hideRect = hideBalls[index].getBoundingClientRect();
+              diffStartX = (hideRect.left + hideRect.width / 2) - (ballRect.left + ballRect.width / 2);
+              diffStartY = (hideRect.top + hideRect.height / 2) - (ballRect.top + ballRect.height / 2);
+          }
+          
+          gsap.set(ball, { 
+              x: diffStartX, 
+              y: diffStartY, 
+              opacity: 0, 
+              scale: 0.4, 
+              borderRadius: "50%" 
+          });
+      });
+
+      // TIMELINE 1: THE DROP 
+      dropTl = gsap.timeline({
+          scrollTrigger: {
+              trigger: ".tabing-scroll-track .personal-tabing-section",
+              start: "top 55%",
+              end: "top top", 
+              scrub: 1,
+			  invalidateOnRefresh: true,
+          }
+      });
+
+      dropTl.to(hideBalls, { opacity: 0, duration: 0.01 }, 0)
+            .to(balls, { opacity: 1, duration: 0.01 }, 0)
+            .to(balls, { 
+                x: 0, 
+                y: 0, 
+                scale: 1, 
+                borderRadius: "7px", 
+                duration: 1, 
+                ease: "power2.out" 
+            }, 0);
+
+
+      // TIMELINE 2: THE ACCORDION & FINAL DROP
+      masterTl = gsap.timeline({
+          scrollTrigger: {
+              trigger: ".tabing-scroll-track", 
+              start: "top top", 
+              end: "bottom bottom", 
+              scrub: 1, 
+              invalidateOnRefresh: true 
+          }
+      });
+
+      masterTl.addLabel("start");
+
+      accItems.forEach((item, index) => {
+          const content = item.querySelector(".acc-content");
+          const lis = content.querySelectorAll("li");
+          const h = getAutoHeight(content);
+          const vis = visuals[index];
+          const span = item.querySelector(".acc-header > span");
+          const targetColor = item.getAttribute("data-color") || "#000";
+          
+          let phaseLabel = "phase" + index;
+
+          if (index === 0) {
+              masterTl.addLabel(phaseLabel, "start+=0.1") 
+                .to(span, { color: targetColor, duration: 0.3 }, phaseLabel)
+                .to(content, { height: h, duration: 0.6, ease: "power2.inOut" }, phaseLabel)
+                .to(vis, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, phaseLabel)
+                .to(lis, { x: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: "power2.out" }, phaseLabel + "+=0.2");
+          } else {
+              let prevItem = accItems[index - 1];
+              let prevContent = prevItem.querySelector(".acc-content");
+              let prevLis = prevContent.querySelectorAll("li");
+              let prevVis = visuals[index - 1];
+              let prevSpan = prevItem.querySelector(".acc-header > span");
+              let prevSlot = prevItem.querySelector(".dotted-slot");
+              let prevBall = prevItem.querySelector(".ball");
+
+              masterTl.addLabel(phaseLabel, "+=0.5")
+                .to(prevLis, { opacity: 0, x: -20, duration: 0.3, stagger: -0.05 }, phaseLabel)
+                .to(prevContent, { height: 0, duration: 0.6, ease: "power2.inOut" }, phaseLabel + "+=0.2")
+                .to(prevSpan, { opacity: 0, duration: 0.6, ease: "power2.inOut" }, phaseLabel + "+=0.2")
+                .to(prevSlot, { borderColor: "transparent", duration: 0.6, ease: "power2.inOut" }, phaseLabel + "+=0.2")
+                .to(prevBall, { opacity: 0, duration: 0.1, ease: "power2.inOut" }, phaseLabel + "+=0.2") // Hides previous ball
+                .to(prevItem, { marginTop: -slideUpDistance, duration: 0.6, ease: "power2.inOut" }, phaseLabel + "+=0.2")
+                .to(prevVis, { opacity: 0, scale: 0.95, duration: 0.4 }, phaseLabel)
+                .to(span, { color: targetColor, duration: 0.3 }, phaseLabel + "+=0.2")
+                .to(content, { height: h, duration: 0.6, ease: "power2.inOut" }, phaseLabel + "+=0.2")
+                .to(vis, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, phaseLabel + "+=0.2")
+                .to(lis, { x: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: "power2.out" }, phaseLabel + "+=0.4");
+          }
+      });
+
+      // OUTRO PHASE: ACCORDION CLOSES
+      const lastIdx = accItems.length - 1;
+      const lastItem = accItems[lastIdx];
+      const lastContent = lastItem.querySelector(".acc-content");
+      const lastLis = lastContent.querySelectorAll("li");
+      const lastVis = visuals[lastIdx];
+      const lastSpan = lastItem.querySelector(".acc-header > span");
+      const lastSlot = lastItem.querySelector(".dotted-slot");
+
+      masterTl.addLabel("outro", "+=0.5")
+        .to(lastLis, { opacity: 1, x: -20, duration: 0.3, stagger: -0.05 }, "outro")
+        .to(lastContent, { height: auto, duration: 0.6, ease: "power2.inOut" }, "outro+=0.2")
+        .to(lastSpan, { opacity: 1, duration: 0.6, ease: "power2.inOut" }, "outro+=0.2")
+        .to(lastSlot, { borderColor: "transparent", duration: 0.6, ease: "power2.inOut" }, "outro+=0.2")
+        .to(lastVis, { opacity: 1, scale: 0.95, duration: 0.4 }, "outro");
+
+      // FINAL PHASE: ALL 3 BALLS FLY DOWN TO CASE STUDY BOXES
+      balls.forEach((ball, i) => {
+          if (!caseBoxes[i]) return;
+
+          // 1. Force all balls back to full opacity instantly before they move
+          masterTl.to(ball, { opacity: 1, duration: 0.01 }, "outro");
+
+          // 2. Fly downwards to the exact center of the new divs
+          masterTl.to(ball, {
+              x: () => {
+                  const boxRect = caseBoxes[i].getBoundingClientRect();
+                  const ballRect = ball.getBoundingClientRect();
+                  return gsap.getProperty(ball, "x") + (boxRect.left + boxRect.width / 2) - (ballRect.left + ballRect.width / 2);
+              },
+              y: () => {
+                  const boxRect = caseBoxes[i].getBoundingClientRect();
+                  const ballRect = ball.getBoundingClientRect();
+                  return gsap.getProperty(ball, "y") + (boxRect.top + boxRect.height / 2) - (ballRect.top + ballRect.height / 2);
+              },
+              scale: 1.5,
+              duration: 0.8, 
+              ease: "power1.inOut" 
+          }, "outro+=0.1"); 
+      });
+  }
+
+  window.addEventListener("load", initGSAP);
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+          initGSAP(); 
+          ScrollTrigger.refresh(); 
+      }, 250); 
+  });
+	});
+</script>
+
+<!-- GHOST ball on desktop -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // 1. Initialize GSAP MatchMedia
+      let mm = gsap.matchMedia();
+
+      // 2. Wrap your entire logic inside the desktop breakpoint (768px and up)
+      mm.add("(min-width: 768px)", () => {
+          
+          // Colors matching your layout
+          const colors = ['#002A54', '#FFA106', '#1DB7D1'];
+          const ghostBalls = [];
+
+          // Create the Ghost Balls
+          for (let i = 0; i < 3; i++) {
+              let ball = document.createElement('div');
+              ball.classList.add('ghost-ball'); 
+              ball.style.width = '30px';  
+              ball.style.height = '30px'; 
+              ball.style.backgroundColor = colors[i];
+              
+              ball.style.position = 'fixed'; 
+              ball.style.top = '0px';   
+              ball.style.left = '0px';  
+              
+              ball.style.borderRadius = '7px'; 
+              ball.style.zIndex = '999999';
+              ball.style.opacity = '0'; // Keeps them completely hidden before scrolling
+              ball.style.pointerEvents = 'none'; 
+              
+              document.body.appendChild(ball);
+              ghostBalls.push(ball);
+          }
+
+          function initGhostTransition() {
+              // CHANGE THESE to the classes/IDs of your bottom semi-circle elements
+              const endTargets = [
+                  document.querySelector(".case_study_box_ball1"), // Replace with your actual class
+                  document.querySelector(".case_study_box_ball2"), // Replace with your actual class
+                  document.querySelector(".case_study_box_ball3")      // Replace with your actual class
+              ];
+              
+              // Where they spawn from (Left side text elements)
+              const startTargets = document.querySelectorAll(".acc-header");
+
+              if (!endTargets[0] || !startTargets.length) return;
+
+              // The scroll timeline for the jump
+              let bridgeTl = gsap.timeline({
+                  scrollTrigger: {
+                      trigger: ".tabing-scroll-track", 
+                      start: "bottom 80%", 
+                      endTrigger: endTargets[0], // End when the first bottom target is reached
+                      end: "top 30%", 
+                      scrub: 1,
+                      invalidateOnRefresh: true 
+                  }
+              });
+
+              // Animate each ghost ball at the EXACT SAME TIME
+              ghostBalls.forEach((ball, i) => {
+                  if (!endTargets[i] || !startTargets[i]) return;
+
+                  // Instantly make them visible ONLY when the scroll timeline begins
+                  bridgeTl.to(ball, { opacity: 1, duration: 0.01 }, 0);
+
+                  bridgeTl.fromTo(ball, {
+                      scale: 1,
+                      borderRadius: "7px",
+                      x: () => {
+                          const rect = startTargets[i].getBoundingClientRect();
+                          return rect.left + 30; 
+                      },
+                      y: () => {
+                          const rect = startTargets[i].getBoundingClientRect();
+                          return rect.top + (rect.height / 2) - 15; 
+                      }
+                  }, {
+                      scale: 1.5,
+                      borderRadius: "50%",
+                      x: () => {
+                          const rect = endTargets[i].getBoundingClientRect();
+                          // Keep horizontal center alignment
+                          return rect.left + (rect.width / 2) - 15; 
+                      },
+                      y: () => {
+                          const rect = endTargets[i].getBoundingClientRect();
+                          // CHANGED: Aim for the top edge of the semi-circle instead of the middle
+                          return rect.top - 10; 
+                      },
+                      ease: "power1.out", 
+                      duration: 2
+                  }, 0); 
+                  
+                  // CHANGED: Instantly disappear just before it finishes the movement into the space
+                  bridgeTl.to(ball, { opacity: 0, duration: 0.01 }, "-=0.15");
+              });
+          }
+
+          initGhostTransition();
+
+          // Refresh math on window resize
+          let resizeTimer;
+          const handleResize = () => {
+              clearTimeout(resizeTimer);
+              resizeTimer = setTimeout(() => {
+                  ScrollTrigger.refresh();
+              }, 250);
+          };
+          window.addEventListener("resize", handleResize);
+
+          // 3. CLEANUP FUNCTION (Runs automatically if window drops below 768px)
+          return () => {
+              ghostBalls.forEach(ball => {
+                  if (ball.parentNode) {
+                      ball.parentNode.removeChild(ball);
+                  }
+              });
+              window.removeEventListener("resize", handleResize);
+          };
+      });
+  });
+</script>
+<!-- =============personal-tabing-section script end======================= -->
+
+
+
+
+
+<!-- mobile heading section script and ball script below  -->
+<script>
+      document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+        ScrollTrigger.config({ ignoreMobileResize: true });
+
+        let mm = gsap.matchMedia();
+
+        mm.add("(max-width: 767px)", () => {
+          const stickyTrack = document.querySelector(".mobile-sticky-track");
+          const mobileBlocks = document.querySelectorAll(
+            ".mobile-services-section .mobile-service-block",
+          );
+          const mobileBalls = document.querySelectorAll(
+            ".mobile-services-section .ball",
+          );
+
+          if (!stickyTrack || mobileBlocks.length === 0) return;
+
+          //  INITIAL STATE
+          gsap.set(mobileBalls, {
+            display: "block",
+            position: "relative",
+            y: -600,
+            x: 0,
+            opacity: 0,
+            scale: 0.5,
+          });
+
+          mobileBlocks.forEach((block) => {
+            // Use autoAlpha for better fade handling
+            gsap.set(block.querySelector(".mobile-list"), {
+              height: 0,
+              autoAlpha: 0,
+            });
+            gsap.set(block.querySelector(".mobile-visual"), {
+              height: 0,
+              autoAlpha: 0,
+              scale: 0.8,
+              marginTop: 0,
+            });
+            gsap.set(block.querySelector(".acc-header span"), {
+              color: "#000",
+            });
+
+            //  LI initial: push down slightly on the Y axis and set autoAlpha to 0
+            gsap.set(block.querySelectorAll(".mobile-list li"), {
+              y: 15,
+              autoAlpha: 0,
+            });
+          });
+
+          //  AUTO HEIGHT HELPER
+          const getAutoHeight = (el) => {
+            gsap.set(el, { height: "auto" });
+            const h = el.offsetHeight;
+            gsap.set(el, { height: 0 });
+            return h;
+          };
+
+          //  TIMELINE
+          let mobileTl2 = gsap.timeline({
+            scrollTrigger: {
+              trigger: stickyTrack,
+              start: "top 70%",
+              end: "bottom bottom",
+              scrub: 1,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          // =========================
+          // PHASE 1: BALLS DROP
+          // =========================
+          mobileTl2.to(
+            mobileBalls,
+            {
+              y: 0,
+              x: 0,
+              opacity: 1,
+              scale: 1,
+              duration: 0.8,
+              stagger: 0.1,
+              ease: "back.out(1.2)",
+            },
+            "start",
+          );
+
+          // =========================
+          // PHASE 2: FIRST OPEN
+          // =========================
+          const c1 = mobileBlocks[0].querySelector(".dotted-slot");
+          const l1 = mobileBlocks[0].querySelector(".mobile-list");
+          const v1 = mobileBlocks[0].querySelector(".mobile-visual");
+
+          mobileTl2
+            .to(
+              mobileBlocks[0].querySelector(".acc-header span"),
+              { color: c1, duration: 0.4 },
+              "start+=0.5",
+            )
+            .to(
+              l1,
+              { height: () => getAutoHeight(l1), autoAlpha: 1, duration: 0.4 },
+              "start+=0.5",
+            )
+
+            //  LI animation: Fade up and slide in perfectly
+            .to(
+              mobileBlocks[0].querySelectorAll(".mobile-list li"),
+              {
+                y: 0,
+                autoAlpha: 1,
+                stagger: 0.08,
+                duration: 0.4,
+                ease: "power2.out",
+              },
+              "start+=0.6",
+            )
+
+            .to(
+              v1,
+              {
+                height: () => getAutoHeight(v1),
+                autoAlpha: 1,
+                scale: 1,
+                marginTop: 24,
+                duration: 0.4,
+              },
+              "start+=0.5",
+            );
+
+          // =========================
+          // PHASE 3: FIRST CLOSE, SECOND OPEN
+          // =========================
+          const c2 = mobileBlocks[1].querySelector(".dotted-slot");
+          const l2 = mobileBlocks[1].querySelector(".mobile-list");
+          const v2 = mobileBlocks[1].querySelector(".mobile-visual");
+
+          mobileTl2
+            .to(l1, { height: 0, autoAlpha: 0, duration: 0.4 }, "step2")
+
+            //  reset LI for block 1 smoothly
+            .to(
+              mobileBlocks[0].querySelectorAll(".mobile-list li"),
+              {
+                y: 15,
+                autoAlpha: 0,
+                duration: 0.2,
+              },
+              "step2",
+            )
+
+            .to(
+              v1,
+              {
+                height: 0,
+                autoAlpha: 0,
+                scale: 0.8,
+                marginTop: 0,
+                duration: 0.4,
+              },
+              "step2",
+            )
+            .to(
+              mobileBlocks[0].querySelector(".acc-header span"),
+              { color: "#000", duration: 0.4 },
+              "step2",
+            )
+
+            .to(
+              mobileBlocks[1].querySelector(".acc-header span"),
+              { color: c2, duration: 0.4 },
+              "step2",
+            )
+            .to(
+              l2,
+              { height: () => getAutoHeight(l2), autoAlpha: 1, duration: 0.4 },
+              "step2",
+            )
+
+            //  LI animation for block 2
+            .to(
+              mobileBlocks[1].querySelectorAll(".mobile-list li"),
+              {
+                y: 0,
+                autoAlpha: 1,
+                stagger: 0.08,
+                duration: 0.4,
+                ease: "power2.out",
+              },
+              "step2+=0.1",
+            )
+
+            .to(
+              v2,
+              {
+                height: () => getAutoHeight(v2),
+                autoAlpha: 1,
+                scale: 1,
+                marginTop: 24,
+                duration: 0.4,
+              },
+              "step2",
+            );
+
+          // =========================
+          // PHASE 4: SECOND CLOSE, THIRD OPEN
+          // =========================
+          const c3 = mobileBlocks[2].querySelector(".dotted-slot");
+          const l3 = mobileBlocks[2].querySelector(".mobile-list");
+          const v3 = mobileBlocks[2].querySelector(".mobile-visual");
+
+          mobileTl2
+            .to(l2, { height: 0, autoAlpha: 0, duration: 0.4 }, "step3")
+
+            //  reset LI for block 2 smoothly
+            .to(
+              mobileBlocks[1].querySelectorAll(".mobile-list li"),
+              {
+                y: 15,
+                autoAlpha: 0,
+                duration: 0.2,
+              },
+              "step3",
+            )
+
+            .to(
+              v2,
+              {
+                height: 0,
+                autoAlpha: 0,
+                scale: 0.8,
+                marginTop: 0,
+                duration: 0.4,
+              },
+              "step3",
+            )
+            .to(
+              mobileBlocks[1].querySelector(".acc-header span"),
+              { color: "#000", duration: 0.4 },
+              "step3",
+            )
+
+            .to(
+              mobileBlocks[2].querySelector(".acc-header span"),
+              { color: c3, duration: 0.4 },
+              "step3",
+            )
+            .to(
+              l3,
+              { height: () => getAutoHeight(l3), autoAlpha: 1, duration: 0.4 },
+              "step3",
+            )
+
+            //  LI animation for block 3
+            .to(
+              mobileBlocks[2].querySelectorAll(".mobile-list li"),
+              {
+                y: 0,
+                autoAlpha: 1,
+                stagger: 0.08,
+                duration: 0.4,
+                ease: "power2.out",
+              },
+              "step3+=0.1",
+            )
+
+            .to(
+              v3,
+              {
+                height: () => getAutoHeight(v3),
+                autoAlpha: 1,
+                scale: 1,
+                duration: 0.4,
+              },
+              "step3",
+            );
+        });
+
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 500);
+      });
+    </script>
+
+<script>
+ document.addEventListener("DOMContentLoaded", () => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      let mm = gsap.matchMedia();
+
+      mm.add("(max-width: 767px)", () => {
+          
+          const colors = ['#002A54', '#FFA106', '#1DB7D1'];
+          const ghostBalls = [];
+
+          // Create the Ghost Balls
+          for (let i = 0; i < 3; i++) {
+              let ball = document.createElement('div');
+              ball.classList.add('ghost-ball'); 
+              ball.style.width = '30px';  
+              ball.style.height = '30px'; 
+              ball.style.backgroundColor = colors[i];
+              
+              ball.style.position = 'fixed'; 
+              ball.style.top = '0px';   
+              ball.style.left = '0px';  
+              
+              ball.style.borderRadius = '50%'; 
+              ball.style.zIndex = '999999';
+              ball.style.opacity = '0'; 
+              ball.style.pointerEvents = 'none'; 
+              
+              document.body.appendChild(ball);
+              ghostBalls.push(ball);
+          }
+
+          function initGhostTransition() {
+              const caseBoxes = [
+                  document.querySelector(".caseStudySwiper .case_study_box_ball1"),
+                  document.querySelector(".caseStudySwiper .case_study_box_ball2"),
+                  document.querySelector(".caseStudySwiper .case_study_box_ball3")
+              ];
+              
+              if (!caseBoxes[0]) return;
+
+              // 1. Updated ScrollTrigger to fire at 80% completion
+              let bridgeTl = gsap.timeline({
+                  scrollTrigger: {
+                      trigger: ".mobile-sticky-track", 
+                      // Starts when the viewport bottom hits 80% of the 300vh track
+                      start: "90% bottom", 
+                      // Ends when the bottom of the track reaches the top of the screen
+                      end: "bottom top", 
+                      scrub: 1,
+                      invalidateOnRefresh: true 
+                  }
+              });
+
+              ghostBalls.forEach((ball, i) => {
+                  if (!caseBoxes[i]) return;
+
+                  bridgeTl.to(ball, { opacity: 1, duration: 0.01 }, 0);
+
+                  // 2. Updated Coordinates to match the drawn red lines (coming from top-left)
+                  bridgeTl.fromTo(ball, {
+                      scale: 1,
+                      // Start at top-left edge of the screen (x: 0, y: 0)
+                      x: (window.innerWidth * 0.1) * i, // Spreads them slightly at the top
+                      y: -20 // Starts just above the visible viewport
+                  }, {
+                      scale: 1.5,
+                      x: () => {
+                          const rect = caseBoxes[i].getBoundingClientRect();
+                          return rect.left + (rect.width / 2) - 10;
+                      },
+                      y: () => {
+                          const rect = caseBoxes[i].getBoundingClientRect();
+                          return rect.top + (rect.height / 2) - 10; 
+                      },
+                      ease: "power2.inOut", 
+                      duration: 2
+                  }, 0); 
+                  
+                  // Mix/fade into the box at the end
+                  bridgeTl.to(ball, { opacity: 0, duration: 0.5 }, "+=0.1");
+              });
+          }
+
+          setTimeout(initGhostTransition, 100);
+
+          let resizeTimer;
+          const handleResize = () => {
+              clearTimeout(resizeTimer);
+              resizeTimer = setTimeout(() => {
+                  ScrollTrigger.refresh();
+              }, 250);
+          };
+          window.addEventListener("resize", handleResize);
+
+          return () => {
+              ghostBalls.forEach(ball => {
+                  if (ball.parentNode) {
+                      ball.parentNode.removeChild(ball);
+                  }
+              });
+              window.removeEventListener("resize", handleResize);
+          };
+      });
+  });
+</script>
+
+
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [Dark section with numbers 1 2 3 with slide section script]
+ ###################################### -->
+<!-- =======================number section script============================== -->
+<script>
+  // Wait for the window to fully load (Lotties, images, etc.)
+ document.addEventListener("DOMContentLoaded", () => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Create a matchMedia instance
+    let mm = gsap.matchMedia();
+
+    // Run this code ONLY on screens 768px and wider (above 767px)
+    mm.add("(min-width: 768px)", () => {
+      
+      const sections = document.querySelectorAll('.content-section');
+      const numbersTrack = document.querySelector('.numbers-track');
+      const numItems = document.querySelectorAll('.num-item');
+
+      // Calculate step distance (160px height + 30px gap)
+      const stepDistance = 290; 
+
+      function updateActiveStage(index) {
+        gsap.to(numbersTrack, {
+          y: -(index * stepDistance),
+          duration: 0.5,
+          ease: "power2.out",
+          overwrite: "auto" // Prevents stuttering if you scroll really fast
+        });
+
+        numItems.forEach((num, i) => {
+          num.classList.toggle('active', i === index);
+        });
+      }
+
+      // DELAY FIX: Wait 100ms so the pinned section scripts can finish setting up
+      setTimeout(() => {
+          sections.forEach((section, index) => {
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 50%", // Triggers when the top of the article hits the middle of the screen
+              end: "bottom 50%",
+              onEnter: () => updateActiveStage(index),
+              onEnterBack: () => updateActiveStage(index)
+            });
+          });
+
+          // MAGIC FIX: Re-sort triggers by physical DOM order and recalculate all heights
+          ScrollTrigger.sort();
+          ScrollTrigger.refresh();
+      }, 100); 
+
+      // CLEANUP FUNCTION: This runs automatically if the user resizes below 768px
+      return () => {
+        // Reset the track position
+        if (numbersTrack) {
+            gsap.set(numbersTrack, { clearProps: "y" }); 
+        }
+        // Remove active classes
+        if (numItems) {
+            numItems.forEach(num => num.classList.remove('active'));
+        }
+      };
+
+    }); // End of matchMedia
+  });
+</script>
+<!-- =======================number section script end============================== -->
+
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [nians logo center section all box animation script ]
+ ###################################### -->
+<!-- =======================center box section animate script ============================== -->
+<!-- <script>
+	 window.addEventListener("load", () => {
+  // Register the ScrollTrigger plugin
+  gsap.registerPlugin(ScrollTrigger);
+
+  // 1. Column A: Move UP as you scroll down
+  // INCREASED: y changed from -130 to -350
+  gsap.to(".always_do .d-flex > ul:not(.mt)", {
+    y: -350, 
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".always_do",
+      start: "top top", 
+      end: "bottom top",
+      scrub: 1,
+		invalidateOnRefresh: true,
+    }
+  });
+
+  // 2. Column B: Move DOWN as you scroll down
+  // INCREASED: y changed from 60 to 200
+  gsap.to(".center_logo", {
+// 	gsap.to(".bubble-ball", {
+    y: 60, 
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".always_do",
+      start: "top top", 
+      end: "bottom top",
+      scrub: 1,
+    }
+  });
+
+  // 3. Center Globe Logo
+  // INCREASED: y changed from -50 to -180
+  gsap.to(".always_do .d-flex > ul.mt", {
+    y: -180,
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".always_do",
+      start: "top top", 
+      end: "bottom top",
+      scrub: 1, 
+    }
+  });
+ScrollTrigger.refresh();
+  });
+</script> -->
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+  function initAnimations() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Refresh ScrollTrigger to ensure coordinates are correct
+    ScrollTrigger.refresh();
+
+    // 1. Column A: Move UP
+    gsap.to(".always_do .d-flex > ul:not(.mt)", {
+      y: -220,
+// 		y: -350,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".always_do",
+        start: "top top", // Starts when the section enters view
+        end: "bottom top",   // Ends when it leaves
+        scrub: 1,
+        invalidateOnRefresh: true
+      }
+    });
+
+    // 2. Column B: Move DOWN (Center Logo)
+    gsap.to(".center_logo", {
+      y: 20,
+// 		y:60,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".always_do",
+        start: "top top",
+        end: "bottom top",
+        scrub: 1,
+        invalidateOnRefresh: true
+      }
+    });
+
+    // 3. Column C: Move UP (The 'mt' columns)
+    gsap.to(".always_do .d-flex > ul.mt", {
+      y: -100,
+// 		y: -180,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".always_do",
+        start: "top top",
+        end: "bottom top",
+        scrub: 1,
+        invalidateOnRefresh: true
+      }
+    });
+  }
+
+  // FAILSAFE: Run if already loaded, otherwise wait for load
+  if (document.readyState === "complete") {
+    initAnimations();
+  } else {
+    window.addEventListener("load", initAnimations);
+  }
+		});
+</script>
+
+<!-- =======================center box section animate script end============================== -->
+
+
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [ PIPE SECTION SCRIPT FOR ALL BOXES ANIMATE]
+ ###################################### -->
+<!-- =======================pipe box section animate script ============================== -->
+ <script>
+	 document.addEventListener("DOMContentLoaded", () => {
+  // Ensure ScrollTrigger is registered
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Create a timeline for the '.integrate' section
+  const integrateTl = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".integrate",
+      start: "top 60%", // Adjusted: Start slightly earlier to give more room
+      end: "top -20%",  // Adjusted: Extend the end point so the animation has a longer physical scroll distance to complete
+      scrub: 1.5,       // INCREASED: Adds a slightly longer "catch-up" delay for a buttery, floating effect
+		
+    }
+  });
+
+  // 1. Center Image
+  integrateTl.from(".integrate .col-md-4.text-center img", {
+    y: -150,           // Slightly reduced distance so it doesn't have to travel as fast
+    opacity: 0,
+    ease: "none"       // CHANGED: Removed power2.out. See explanation below!
+  }, 0);
+
+  // 2. Left Boxes
+  integrateTl.from(".social_service_left .social_service_text", {
+    x: 100,            // Reduced distance for a subtler, smoother slide
+    // opacity: 0,
+    stagger: 0.15,     // Slightly increased stagger to separate them more
+    ease: "none"       // CHANGED
+  }, 0); 
+
+  // 3. Right Boxes
+  integrateTl.from(".social_service_right .social_service_text", {
+    x: -100,           // Reduced distance
+    // opacity: 0,
+    stagger: 0.15,
+    ease: "none"       // CHANGED
+  }, 0);
+
+  // 4. Background Lottie lines
+  integrateTl.from("#brandLogoLottie", {
+    opacity: 0,
+    scale: 0.9, 
+    ease: "none" 
+  }, 0);
+	 });
+</script>
+<!-- =======================pipe box section animate script end============================== -->
+
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [CTA SECTION SCRIPT FOR COLOR FILL]
+ ###################################### -->
+<!-- =======================cta section animate script ============================== -->
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+  // Ensure ScrollTrigger is registered
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Animate the overlay's height from 0 to 100%
+  gsap.fromTo(".cta-overlay", 
+    { 
+      height: "0%" 
+    }, 
+    {
+      height: "100%",
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".cta-section",
+        start: "top 70%",  // Animation STARTS when the top of the section hits 40% from the top of the screen
+        end: "center 70%", // Animation ENDS (is fully filled) when the center of the section reaches that 40% mark
+        scrub: 1,           // Links the fill directly to your scroll direction
+		  invalidateOnRefresh: true,
+      }
+    }
+  );
+
+  gsap.to(".cta-content .btn-custom", {
+  display: "block",     // Changes from 'none' so it takes up space in the DOM
+  opacity: 1,          // Smoothly fades in due to the scrub
+  scrollTrigger: {
+    trigger: ".cta-section",
+    start: "top 60%",  // Animation starts when the top of the section hits 70% from the top of the screen
+    end: "center 60%", // Animation ends when the center of the section reaches that 70% mark
+    scrub: 1,           // Links the fade-in directly to your scroll direction
+	  invalidateOnRefresh: true,
+  }
+});
+	});
+</script>
+<!-- =======================cta section animate script end============================== -->
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [CASE STUDY SECTION SCRIPT FOR BACKGROUND COLOR]
+ ###################################### -->
+<!-- =======================background color case study section animate script ============================== -->
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+  // Ensure ScrollTrigger is registered
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Animate the CSS variable on the boxes
+  gsap.fromTo(".case_study_box", 
+    {
+      "--bubble-size": "0%" // Start invisible
+    },
+    {
+      "--bubble-size": "150%", // Expand to cover the box
+      ease: "none",
+      // stagger: 0.15,
+      scrollTrigger: {
+        trigger: ".case-study",
+        start: "top 60%",   
+        end: "center 40%",  
+        scrub: 1 ,
+		  invalidateOnRefresh: true,
+      }
+    }
+  );
+	});
+</script>
+
+
+
+
+
+
+<!-- CASE STUDY SECTION IMAGE OPACITY SCRIPT	 -->
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+  // Register the ScrollTrigger plugin
+  gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.config({ ignoreMobileResize: true });
+  // Create an instant toggle based on scroll position
+  ScrollTrigger.create({
+    trigger: ".case-study",
+    start: "top 50%",   // Section becomes visible when its top hits 60% of viewport
+    end: "bottom 0%",  // Section hides immediately when its bottom passes 20%
+    toggleClass: "in-view", // Instantly adds/removes the CSS class 
+    
+    // Optional markers to help you see exactly where the start/end lines are on your screen
+    // markers: true 
+  });
+			 
+		});
+</script>
+<!-- =======================background color case study section animate script end============================== -->
+
+
+
+
+
+
+
+<!-- case study section mobile color circular animation -->
+<script>
+  // Wait for the HTML to fully load
+  document.addEventListener("DOMContentLoaded", (event) => {
+    
+    // Ensure ScrollTrigger is registered
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Use matchMedia to restrict the animation to mobile screens
+    let mm = gsap.matchMedia();
+
+    mm.add("(max-width: 767px)", () => {
+      gsap.fromTo(".case_study_box", 
+        {
+          "--bubble-size": "0%" // Start invisible
+        },
+        {
+          "--bubble-size": "150%", // Expand to cover the box
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".mobile-case-study-section", 
+            start: "top 90%",   
+            end: "center 40%",  
+            scrub: 1,
+			  invalidateOnRefresh: true,
+//             markers: true // <--- THIS WILL SHOW RED/GREEN LINES ON SCREEN
+          }
+        }
+      );
+    });
+  });
+</script>
+
+
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [Center background circle move bottom nians logo]
+ ###################################### -->
+
+<!-- ================================Center background circle move bottom nians logo============================================================================= -->
+
+<!-- ####################################################
+ #########################################
+ [20+ circle Center background circle move bottom nians logo]
+ ###################################### -->
+<!-- ================================Center background circle move bottom nians logo============================================================================= -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. Get the starting, ending, and target elements
+    const h2 = document.querySelector('.circle h2');
+    const endEl = document.querySelector('.center_logo');
+    const logoImg = document.querySelector('.center_logo img'); 
+
+    // Create a GSAP matchMedia instance
+    let mm = gsap.matchMedia();
+
+    // The code inside this block will only run when the screen is 768px or wider
+    mm.add("(min-width: 768px)", () => {
+      
+      // 2. Create the bubble ball dynamically and prepend it to the h2
+      const bubbleBall = document.createElement('div');
+      bubbleBall.className = 'bubble-ball';
+      
+      // Ensure the h2 can hold the absolute positioned ball behind its text
+      h2.style.zIndex = '1';
+      h2.prepend(bubbleBall);
+
+      // 3. Helper function to get the responsive distance (Delta)
+      const getTargetDelta = () => {
+        if (!endEl || !h2) return { x: 0, y: 0 };
+        const startRect = h2.getBoundingClientRect();
+        const endRect = endEl.getBoundingClientRect();
+        
+        const startX = startRect.left + startRect.width / 2;
+        const startY = startRect.top + startRect.height / 2;
+        const endX = endRect.left + endRect.width / 2;
+        const endY = endRect.top + endRect.height / 2;
+        
+        return { 
+          x: endX - startX, 
+          y: endY - startY 
+        };
+      };
+
+      // 4. Set the initial starting state for the ball
+      gsap.set(bubbleBall, {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        xPercent: -50,
+        yPercent: -50,
+        width: 230,
+        height: 230, 
+        opacity: 1,
+        backgroundColor: "#32312f", 
+        borderRadius: "50%",
+        zIndex: -1 
+      });
+
+      // Move the logo up to the starting h2 position so it can travel down
+      gsap.set(logoImg, {
+        x: () => -getTargetDelta().x,
+        y: () => -getTargetDelta().y,
+        scale: 0.5, 
+        opacity: 0
+      });
+
+      // 5. Create the Timeline (paused by default)
+      const tl = gsap.timeline({ paused: true });
+
+      // A. Ball Movement
+      tl.to(bubbleBall, {
+        x: () => getTargetDelta().x,
+        y: () => getTargetDelta().y,
+        scale: 1.6, 
+        ease: "power2.out", 
+        duration: 3       
+      }, 0);
+
+      // B. Logo Movement (Moves exactly with the ball)
+      tl.to(logoImg, {
+        x: 0,
+        y: 0,
+        ease: "power2.out",
+        duration: 3
+      }, 0);
+
+      // C. The Shape Morph
+      tl.to(bubbleBall, {
+        borderRadius: "3%", 
+        ease: "power2.out",
+        duration: 3
+      }, 0);
+
+      // D. The Fast Color Change
+      tl.to(bubbleBall, {
+        background: "#ffffff",
+        ease: "none",
+        duration: 0.6       
+      }, 0);
+
+      // E. Logo fades in partially as it travels
+      tl.to(logoImg, {
+        opacity: 0.4,
+        scale: 0.8,
+        duration: 1.5,
+        ease: "none"
+      }, 0);
+
+      tl.to(bubbleBall, {
+        opacity: 0.4,
+        duration: 1.5,
+        ease: "none"
+      }, 0);
+
+      // F. Logo reaches full 100% opacity as it lands in the box
+      tl.to(logoImg, {
+        opacity: 1,
+        scale: 1,
+        duration: 1.5,
+        ease: "power2.out"
+      }, 1.5); 
+
+      tl.to(bubbleBall, {
+        opacity: 1,
+        duration: 1.2,
+        ease: "power3.out"
+      }, 1.2); 
+
+      // 6. Connect the Timeline to ScrollTrigger
+      ScrollTrigger.create({
+        trigger: ".circle",          
+        start: "bottom 50%",         
+        invalidateOnRefresh: true,
+        onEnter: () => {
+          tl.timeScale(1).play(); 
+        },
+        onLeaveBack: () => {
+          tl.timeScale(4).reverse(); 
+        }
+      });
+
+      // 7. CLEANUP FUNCTION (Crucial for matchMedia)
+      // This fires automatically if the window is resized below 768px
+      return () => {
+        bubbleBall.remove(); // Removes the dynamically added DOM element
+        gsap.set([logoImg, h2], { clearProps: "all" }); // Clears inline styles GSAP added
+      };
+
+    }); // End of matchMedia block
+
+  });
+</script>
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [CASE STUDY SECTION three ball into center brand image]
+ ###################################### -->
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".case-study",
+      start: "bottom 70%",
+      end: "bottom 30%", 
+      scrub: 0.5,
+		invalidateOnRefresh: true,
+    },
+  });
+
+  /* STEP 1: Move down and FADE (Start solid, fade as they move) */
+  tl.to(".bubble1", { x: "30.3vw", y: "15vh", duration: 3, ease: "power2.inOut" }, "move")
+    .to(".bubble2", { x: "0vw", y: "15vh", duration: 3, ease: "power2.inOut" }, "move")
+    .to(".bubble3", { x: "-33.3vw", y: "15vh", duration: 3, ease: "power2.inOut" }, "move")
+    // This reduces the opacity down to 0.5 while they are moving down
+    .to(".bubble", { backgroundColor: "#ffffff", opacity: 1, duration: 5, ease: "power2.out" }, "move"); 
+
+  /* STEP 2: Change to WHITE at the exact end position */
+  // This triggers right after they finish moving
+  tl.to(".bubble", { 
+    backgroundColor: "#ffffff", 
+    opacity:1,
+    duration: 0.2, 
+    ease: "power2.out" 
+  });
+
+  /* STEP 3: Disappear completely (Blur, shrink, opacity 0) */
+  tl.to(".bubble", { 
+    opacity: 0, 
+    scale: 0.5, 
+    // filter: "blur(30px)", 
+    duration: 1, 
+    ease: "power2.out" 
+  });
+	});
+</script>
+
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [ALWAYS DO SECTION swiper script for mobile]
+ ###################################### -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var alwaysDoSwiper = new Swiper('.alwaysDoSwiper', {
+     slidesPerView: 2,
+		slidesPerColumn: 2,
+// 		loop:true,
+    grid: {
+        rows: 2, //  this makes 3 rows
+        fill: 'row' // optional (row-wise fill)
+    },
+    spaceBetween: 5,
+//      speed: 1000,
+// 	autoplay:{
+// 		delay: 2000,
+// 	},
+// 	pagination: {
+// 		el: ".swiper-pagination",
+// 		clickable: true
+// 	}
+});
+ 
+  });
+</script>
+
+
+
+
+<script>
+  // Fires only after EVERYTHING (images, Lotties, GIFs) is completely downloaded
+  window.addEventListener("load", () => {
+    ScrollTrigger.refresh();
+  });
+</script>
+<!-- MOBILE SWIPER CARDS ANIMATION GSAP SCRIPT ALWAYS DO SWIPER -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // 1. Register the ScrollTrigger plugin
+  gsap.registerPlugin(ScrollTrigger);
+  // 2. Select all the slides you want to animate
+  const swiperSlides = gsap.utils.toArray('.alwaysDoSwiper .swiper-slide');
+  // 3. Create the GSAP animation
+  if (swiperSlides.length > 0) {
+    gsap.from(swiperSlides, {
+      scrollTrigger: {
+        trigger: ".alwaysDoSwiper", // The element that triggers the animation
+        start: "top 80%",           // Starts when the top of the swiper hits 80% down the screen
+		  end: "bottom 20%",
+		  toggleActions: "play reverse play reverse",
+//         once: true                  // Ensures the animation only plays once
+      },
+      x: "-100vw",        // Start pushed 100% of the viewport width to the left
+//       opacity: 0,         // Start invisible
+		autoAlpha: 0,
+      duration: 1.2,      // How long each slide takes to move in
+      ease: "power2.out", // Smooth deceleration at the end of the movement
+      stagger: 0.15        // 100ms delay between each slide animating in
+    });
+  }
+});
+</script>
+
+
+
+
+
+<!-- ============================================================================================== -->
+
+
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [Banner form multi select field script]
+ ###################################### -->
+<script>
+  document.querySelectorAll(".select-item").forEach(item => {
+    item.addEventListener("click", function () {
+      this.classList.toggle("active");
+    });
+  });
+</script>
+
+
+
+<!-- ####################################################
+ #########################################
+ [FOOTER SWIPER SCRIPT]
+ ###################################### -->
+<!-- ==============Footer swiper script================== -->
+<script>
+ const footer_logo = new Swiper('.footer_logo', {
+  // Optional parameters 
+  loop: true,
+slidesPerView:5,spaceBetween: 15,speed: 1000,
+	  autoplay:{delay: 3000},
+ breakpoints: {
+        320: {
+            slidesPerView: 3,spaceBetween: 10,
+        },
+        768: {
+            slidesPerView: 5
+        }, 
+        1280: {
+            slidesPerView: 5 
+        }
+    },
+});
+</script>
+
+
+
+
+<!-- FORM MULTISELECT FIELD PLACEHOLDER -->
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+
+  const checkPlaceholder = setInterval(function () {
+
+    const placeholder = document.querySelector(
+      '#servicesSelect + .form-multi-select .form-multi-select-placeholder'
+    );
+
+    if (placeholder) {
+      placeholder.textContent = "Services looking for";
+      clearInterval(checkPlaceholder);
+    }
+
+  }, 100);
+
+}); 
+new FormMultiSelect('#servicesSelect', {
+    selectAll: false
+  });
+</script>
+
+
+
+
+<!-- ####################################################
+ #########################################
+ [CASE STUDY SECTION swiper script for mobile]
+ ###################################### -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var swiper = new Swiper('.caseStudySwiper', {
+      slidesPerView: 1.15, // This shows 1 full card and 15% of the next card
+      spaceBetween: 15,    // Gap between cards
+      // grabCursor: true,    // Shows a hand cursor for dragging
+      // --- Drag & Swipe Settings ---
+      grabCursor: true,    // Shows the "grab" hand cursor on desktop
+      simulateTouch: true, // Allows mouse dragging to work like touch swiping
+      allowTouchMove: true,// Ensures touch/swipe is enabled on mobile
+      shortSwipes: true,   // Allows a quick, short swipe to advance to the next slide
+      resistanceRatio: 0.85, // Adds a slight "bounce" resistance at the beginning/end of the slider
+      // pagination: {
+      //   el: '.swiper-pagination',
+      //   clickable: true,
+      // },
+    });
+  });
+</script>
+
+
+
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    let brandSwiper = null;
+
+    function initOrDestroySwiper() {
+      // Check if screen width is mobile (e.g., less than 768px)
+      if (window.innerWidth < 768) {
+        // Initialize Swiper if it hasn't been initialized yet
+        if (!brandSwiper) {
+          brandSwiper = new Swiper('.brand-swiper', {
+            slidesPerView: 3,      // Number of logos visible at once on mobile
+            spaceBetween: 20,      // Gap between logos
+            loop: true,speed: 1000,            // Infinite loop
+            autoplay: {
+              delay: 2500, 
+            },
+            // Add breakpoints if you need to adjust slides per view on very small screens
+            breakpoints: {
+              320: {
+                slidesPerView: 2.3,
+                spaceBetween: 10
+              },
+              480: {
+                slidesPerView: 3.3,
+                spaceBetween: 10
+              }
+            }
+          });
+        }
+      } else {
+        // Destroy Swiper if screen is desktop and Swiper is active
+        if (brandSwiper !== null) {
+          brandSwiper.destroy(true, true);
+          brandSwiper = null;
+        }
+      }
+    }
+
+    // Run on page load
+    initOrDestroySwiper();
+
+    // Re-evaluate on window resize
+    window.addEventListener('resize', initOrDestroySwiper);
+  });
+</script>
+
+
+	
+	
+
+	
+	
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+	jQuery(document).on('gform_post_render', function(){
+    var field = jQuery('#input_114_61');
+    field.attr('data-placeholder','Services looking for');
+    field.trigger("chosen:updated");
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+jQuery(document).ready(function($) {
+    
+    function initMobileSelect2() {
+        if (window.innerWidth <= 768) {
+            var $field = $('#input_114_61');
+
+            if ($field.length) {
+                
+                // Only initialize if it hasn't been done yet
+                if (!$field.hasClass('select2-hidden-accessible')) {
+                    if ($field.find('option').first().val() !== '') {
+                        $field.prepend('<option value=""></option>');
+                    }
+
+                    $field.select2({
+                        placeholder: "Services looking for",
+                        allowClear: true,
+                        width: '99%'
+                    });
+                }
+
+                // THE FIX: Directly target the generated Select2 textarea and force the placeholder
+                $field.next('.select2-container').find('.select2-search__field').attr('placeholder', 'Services looking for');
+            }
+        }
+    }
+
+    // 1. Run on initial page load
+    // Adding a slight timeout ensures we run *after* any native Gravity Forms scripts finish
+    setTimeout(initMobileSelect2, 100);
+
+    // 2. Run again if Gravity Forms reloads the form via AJAX
+    $(document).on('gform_post_render', function(event, form_id, current_page){
+        if(form_id == 114) {
+            setTimeout(initMobileSelect2, 100);
+        }
+    });
+});
+</script>
+ 

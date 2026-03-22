@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stacked Testimonials - GSAP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #12121c; /* Dark navy background */
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding-bottom: 50vh; /* Space to scroll at the end */
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3.5rem;
+            font-weight: 700;
+            padding: 100px 0 50px;
+            text-transform: uppercase;
+        }
+
+        .section-title span {
+            color: #f7df1e; /* Yellow "SAY" */
+            font-style: italic;
+        }
+
+        /* Container for the cards */
+        .stack-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .testimonial-card {
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            
+            /* Sticky positioning for the stack effect */
+            position: sticky;
+            top: 150px; 
+            transform-origin: center top;
+        }
+
+        .profile-section {
+            text-align: center;
+            border-right: 1px solid #e0e0e0;
+            padding-right: 30px;
+            flex: 0 0 250px;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        .profile-role {
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        .quote-section {
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .quote-icon {
+            font-size: 3rem;
+            color: #6366f1; /* Purple quote marks */
+            line-height: 1;
+            position: absolute;
+            top: -20px;
+            left: 40px;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            line-height: 1.5;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 class="section-title">What Our<br>Clients <span>Say</span></h2>
+
+    <div class="stack-container" id="stack-wrapper">
+        <div class="testimonial-card">
+            <div class="profile-section">
+                <img src="https://i.pravatar.cc/150?u=evhen" alt="Evhen" class="profile-img">
+                <div class="profile-name">Evhen Kryvin</div>
+                <div class="profile-role">CEO of Svitlo Concert</div>
+            </div>
+            <div class="quote-section">
+                <div class="quote-icon">“</div>
+                <p class="quote-text">A very useful service! It provides a systematic and comprehensive understanding of the market and company situation! It allows for proper planning and decision-making! Highly recommend!</p>
+            </div>
+        </div>
+
+        <div class="testimonial-card">
+            <div class="profile-section">
+                <img src="https://i.pravatar.cc/150?u=kirill" alt="Kirill" class="profile-img">
+                <div class="profile-name">Kirill Trosko</div>
+                <div class="profile-role">Producer SkyTalks</div>
+            </div>
+            <div class="quote-section">
+                <div class="quote-icon">“</div>
+                <p class="quote-text">This service is a real game-changer! It gives you a clear and organized view of the market and your company's standing. It's perfect for making smart plans and decisions. I can't recommend it enough!</p>
+            </div>
+        </div>
+
+        <div class="testimonial-card">
+            <div class="profile-section">
+                <img src="https://i.pravatar.cc/150?u=mykhailo" alt="Mykhailo" class="profile-img">
+                <div class="profile-name">Mykhailo Vasyanovych</div>
+                <div class="profile-role">COO of Masters League</div>
+            </div>
+            <div class="quote-section">
+                <div class="quote-icon">“</div>
+                <p class="quote-text">Thank you, guys, for the quick and high-quality execution of the landing page project. We spent minimal time on detailing and discussion. Highly recommend collaborating.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const cards = gsap.utils.toArray(".testimonial-card");
+
+        cards.forEach((card, index) => {
+            // We only want to animate the cards that are being covered
+            if (index !== cards.length - 1) {
+                gsap.to(card, {
+                    scale: 0.9,      // Slightly shrink
+                    opacity: 0.5,    // Fade out as it's covered
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 150px", // Starts when card hits the sticky top
+                        endTrigger: ".stack-container",
+                        end: "bottom bottom",
+                        scrub: true,
+                        // markers: true, // Uncomment to debug
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
